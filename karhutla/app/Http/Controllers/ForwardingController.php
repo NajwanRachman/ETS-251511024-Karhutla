@@ -62,4 +62,45 @@ class ForwardingController extends Controller
             ->route('coordinator.forwardings.index')
             ->with('success', 'Laporan berhasil diteruskan ke instansi tujuan.');
     }
+    
+    public function recap(Request $request)
+    {
+        $allowedStatuses = [
+            'submitted',
+            'under_review',
+            'reviewed',
+            'forwarded',
+            'closed',
+        ];
+
+        $status = $request->query('status');
+
+        $query = Report::with(['address', 'reporter']);
+
+        // Filter berdasarkan status
+        if (in_array($status, $allowedStatuses)) {
+            $query->where('status', $status);
+        }
+
+        $reports = $query->latest()->paginate(10)->withQueryString();
+
+        // Tiga metrik rekapitulasi
+        $totalReports = (clone $query)->count();
+
+        $activeReports = (clone $query)
+            ->whereIn('status', ['submitted', 'under_review'])
+            ->count();
+
+        $forwardedReports = (clone $query)
+            ->whereIn('status', ['forwarded', 'closed'])
+            ->count();
+
+        return view('coordinator.recap.index', compact(
+            'reports',
+            'totalReports',
+            'activeReports',
+            'forwardedReports',
+            'status'
+        ));
+    }
 }

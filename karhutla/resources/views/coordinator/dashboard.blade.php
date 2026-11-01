@@ -60,10 +60,15 @@
                 class="inline-block bg-green-700 hover:bg-green-800 text-white px-5 py-3 rounded-lg mt-4">
                 Kelola Laporan
             </a>
-            
+
             <a href="{{ route('coordinator.users.index') }}"
                 class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-lg mt-4">
                 Manajemen Pengguna
+            </a>
+
+            <a href="{{ route('coordinator.recap') }}"
+                class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-lg mt-4">
+                Rekapitulasi Laporan
             </a>
         </div>
 

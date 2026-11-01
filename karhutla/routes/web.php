@@ -163,6 +163,9 @@ Route::middleware('auth')->group(function () {
 
         Route::patch('/coordinator/users/{id}/role', [UserController::class, 'updateRole'])
             ->name('coordinator.users.updateRole');
+
+        Route::get('/coordinator/recap', [ForwardingController::class, 'recap'])
+            ->name('coordinator.recap');
     });
 
     // Logout
