@@ -66,7 +66,10 @@
                             <tr class="hover:bg-gray-50">
 
                                 <td class="p-4">
-                                    #{{ $report->report_id }}
+                                    <a href="{{ route('reporter.reports.show', $report->report_id) }}"
+                                        class="text-green-700 font-semibold hover:underline">
+                                        #{{ $report->report_id }}
+                                    </a>
                                 </td>
 
                                 <td class="p-4">

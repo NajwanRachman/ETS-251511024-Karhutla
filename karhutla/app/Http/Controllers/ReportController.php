@@ -19,6 +19,18 @@ class ReportController extends Controller
         return view('reporter.index', compact('reports'));
     }
 
+    public function show($id)
+    {
+        $report = Report::with([
+            'address',
+            'reviews.volunteer'
+        ])
+            ->where('reporter_id', Auth::id())
+            ->findOrFail($id);
+
+        return view('reporter.show', compact('report'));
+    }
+
     public function create()
     {
         $addresses = Address::all();
@@ -60,5 +72,56 @@ class ReportController extends Controller
         return redirect()
             ->route('reporter.dashboard')
             ->with('success', 'Laporan berhasil dikirim!');
+    }
+
+     // Daftar laporan untuk Volunteer
+    public function volunteerIndex()
+    {
+        $reports = Report::with(['address', 'reporter'])
+            ->latest()
+            ->paginate(10);
+
+        return view('volunteer.reports.index', compact('reports'));
+    }
+    // Detail laporan untuk Volunteer
+    public function volunteerShow($id)
+    {
+        $report = Report::with([
+            'address',
+            'reporter',
+            'reviews.volunteer'
+        ])->findOrFail($id);
+
+        return view('volunteer.reports.show', compact('report'));
+    }
+    // Menyimpan hasil pemeriksaan Volunteer
+    public function review(Request $request, $id)
+    {
+        $report = Report::findOrFail($id);
+
+        if (!in_array($report->status, ['submitted', 'under_review'])) {
+            return back()->with('error', 'Laporan ini tidak dapat diperiksa lagi.');
+        }
+
+        $validated = $request->validate([
+            'review_data' => ['required', 'in:layak,tidak_layak'],
+            'review_note' => ['required', 'string', 'max:1000'],
+            'follow_up_required' => ['required', 'boolean'],
+        ]);
+
+        $report->reviews()->create([
+            'volunteer_id' => Auth::id(),
+            'review_data' => $validated['review_data'],
+            'review_note' => $validated['review_note'],
+            'follow_up_required' => $validated['follow_up_required'],
+        ]);
+
+        $report->update([
+            'status' => 'reviewed',
+        ]);
+
+        return redirect()
+            ->route('volunteer.reports.show', $id)
+            ->with('success', 'Hasil pemeriksaan berhasil disimpan.');
     }
 }

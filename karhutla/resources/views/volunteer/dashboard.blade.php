@@ -56,9 +56,10 @@
                 dan perbarui perkembangan pemeriksaan.
             </p>
 
-            <button class="bg-green-700 text-white px-5 py-3 rounded-lg mt-4">
+            <a href="{{ route('volunteer.reports.index') }}"
+                class="inline-block bg-green-700 hover:bg-green-800 text-white px-5 py-3 rounded-lg mt-4">
                 Lihat Daftar Laporan
-            </button>
+            </a>
         </div>
 
     </main>

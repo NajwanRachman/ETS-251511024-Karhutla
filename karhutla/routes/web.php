@@ -63,40 +63,59 @@ Route::middleware('auth')->group(function () {
         // Daftar laporan reporter
         Route::get('/reporter/reports', [ReportController::class, 'index'])
         ->name('reporter.reports.index');
-        
+
         // Form buat laporan
         Route::get('/reporter/reports/create', [ReportController::class, 'create'])
             ->name('reporter.reports.create');
+
+        // Detail laporan
+        Route::get('/reporter/reports/{id}', [ReportController::class, 'show'])
+        ->name('reporter.reports.show');
 
         // Simpan laporan
         Route::post('/reporter/reports', [ReportController::class, 'store'])
             ->name('reporter.reports.store');
     });
 
-    // Dashboard volunteer
-    Route::middleware('role:volunteer')->group(function () {
+    
+        // Dashboard volunteer
+        Route::middleware('role:volunteer')->group(function () {
 
-        Route::get('/volunteer/dashboard', function () {
-            $totalReports = Report::count();
+            // Dashboard Volunteer
+            Route::get('/volunteer/dashboard', function () {
+                $totalReports = Report::count();
 
-            $needReview = Report::whereIn('status', [
-                'submitted',
-                'under_review'
-            ])->count();
+                $needReview = Report::whereIn('status', [
+                    'submitted',
+                    'under_review'
+                ])->count();
 
-            $reviewed = Report::whereIn('status', [
-                'reviewed',
-                'forwarded',
-                'closed'
-            ])->count();
+                $reviewed = Report::whereIn('status', [
+                    'reviewed',
+                    'forwarded',
+                    'closed'
+                ])->count();
 
-            return view('volunteer.dashboard', compact(
-                'totalReports',
-                'needReview',
-                'reviewed'
-            ));
-        })->name('volunteer.dashboard');
-    });
+                return view('volunteer.dashboard', compact(
+                    'totalReports',
+                    'needReview',
+                    'reviewed'
+                ));
+            })->name('volunteer.dashboard');
+
+            // Daftar laporan untuk Volunteer
+            Route::get('/volunteer/reports', [ReportController::class, 'volunteerIndex'])
+                ->name('volunteer.reports.index');
+
+            // Detail laporan untuk Volunteer
+            Route::get('/volunteer/reports/{id}', [ReportController::class, 'volunteerShow'])
+                ->name('volunteer.reports.show');
+
+            // Menyimpan hasil pemeriksaan
+            Route::post('/volunteer/reports/{id}/review', [ReportController::class, 'review'])
+                ->name('volunteer.reports.review');
+
+        });
 
     // Dashboard coordinator
     Route::middleware('role:coordinator')->group(function () {
