@@ -56,9 +56,15 @@
                 dan catat penerusan laporan kepada instansi terkait.
             </p>
 
-            <button class="bg-green-700 text-white px-5 py-3 rounded-lg mt-4">
+           <a href="{{ route('coordinator.forwardings.index') }}"
+                class="inline-block bg-green-700 hover:bg-green-800 text-white px-5 py-3 rounded-lg mt-4">
                 Kelola Laporan
-            </button>
+            </a>
+            
+            <a href="{{ route('coordinator.users.index') }}"
+                class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-lg mt-4">
+                Manajemen Pengguna
+            </a>
         </div>
 
     </main>

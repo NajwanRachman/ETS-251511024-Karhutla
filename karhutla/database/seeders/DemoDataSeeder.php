@@ -48,112 +48,218 @@ class DemoDataSeeder extends Seeder
             ]
         );
 
-        // Data wilayah
-        Address::updateOrCreate(
+        // Data wilayah Bandung Raya
+        $wilayah = [
             [
-                'detail_address' => 'Desa Sukamaju',
-                'city_regency' => 'Bandung',
+                'detail_address' => 'Kecamatan Baleendah',
+                'city_regency' => 'Kabupaten Bandung',
                 'province' => 'Jawa Barat',
             ],
             [
-                'island' => 'Jawa',
-            ]
-        );
-
-        Address::updateOrCreate(
-            [
-                'detail_address' => 'Desa Mekarjaya',
-                'city_regency' => 'Garut',
+                'detail_address' => 'Kecamatan Soreang',
+                'city_regency' => 'Kabupaten Bandung',
                 'province' => 'Jawa Barat',
             ],
             [
-                'island' => 'Jawa',
-            ]
-        );
-
-        Address::updateOrCreate(
-            [
-                'detail_address' => 'Desa Sumberagung',
-                'city_regency' => 'Banyuwangi',
-                'province' => 'Jawa Timur',
+                'detail_address' => 'Kecamatan Dayeuhkolot',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
             ],
             [
-                'island' => 'Jawa',
-            ]
-        );
+                'detail_address' => 'Kecamatan Bojongsoang',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Banjaran',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Margahayu',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Katapang',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Cileunyi',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Rancaekek',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Ciparay',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Majalaya',
+                'city_regency' => 'Kabupaten Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Coblong',
+                'city_regency' => 'Kota Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Lengkong',
+                'city_regency' => 'Kota Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Kiaracondong',
+                'city_regency' => 'Kota Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Antapani',
+                'city_regency' => 'Kota Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Buahbatu',
+                'city_regency' => 'Kota Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Ujungberung',
+                'city_regency' => 'Kota Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Lembang',
+                'city_regency' => 'Kabupaten Bandung Barat',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Padalarang',
+                'city_regency' => 'Kabupaten Bandung Barat',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Cimahi Utara',
+                'city_regency' => 'Kota Cimahi',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'detail_address' => 'Kecamatan Cimahi Tengah',
+                'city_regency' => 'Kota Cimahi',
+                'province' => 'Jawa Barat',
+            ],
+        ];
+
+        // Alihkan tiga alamat lama tanpa menghapus relasi laporan
+        $oldAddresses = [
+            'Desa Sukamaju' => 'Kecamatan Baleendah',
+            'Desa Mekarjaya' => 'Kecamatan Soreang',
+            'Desa Sumberagung' => 'Kecamatan Dayeuhkolot',
+        ];
+
+        foreach ($oldAddresses as $oldName => $newName) {
+            $address = Address::where('detail_address', $oldName)->first();
+
+            if ($address) {
+                $newData = collect($wilayah)->firstWhere('detail_address', $newName);
+
+                $address->update($newData);
+            }
+        }
+
+        // Tambahkan seluruh wilayah lainnya
+        foreach ($wilayah as $data) {
+            Address::updateOrCreate(
+                [
+                    'detail_address' => $data['detail_address'],
+                    'city_regency' => $data['city_regency'],
+                    'province' => $data['province'],
+                ],
+                [
+                    'island' => 'Jawa',
+                ]
+            );
+        }
 
         
-// Ambil akun demo
-$reporter = User::where('email', 'reporter@karhutla.test')->firstOrFail();
-$volunteer = User::where('email', 'volunteer@karhutla.test')->firstOrFail();
-$coordinator = User::where('email', 'coordinator@karhutla.test')->firstOrFail();
+    // Ambil akun demo
+    $reporter = User::where('email', 'reporter@karhutla.test')->firstOrFail();
+    $volunteer = User::where('email', 'volunteer@karhutla.test')->firstOrFail();
+    $coordinator = User::where('email', 'coordinator@karhutla.test')->firstOrFail();
 
-// Ambil data wilayah
-$addresses = Address::all()->keyBy('detail_address');
-
-$reportData = [
-    [
-        'description' => 'Terlihat asap tebal di sekitar area hutan.',
-        'address' => 'Desa Sukamaju',
-        'level' => 'high',
-        'latitude' => -6.9000000,
-        'longitude' => 107.6000000,
-        'status' => 'submitted',
-        'days' => 1,
-    ],
-    [
-        'description' => 'Ditemukan indikasi pembakaran lahan kosong.',
-        'address' => 'Desa Mekarjaya',
-        'level' => 'medium',
-        'latitude' => -7.2000000,
-        'longitude' => 107.9000000,
-        'status' => 'under_review',
-        'days' => 2,
-    ],
-    [
-        'description' => 'Terlihat titik api kecil di sekitar perkebunan.',
-        'address' => 'Desa Sumberagung',
-        'level' => 'high',
-        'latitude' => -8.2000000,
-        'longitude' => 114.3000000,
-        'status' => 'reviewed',
-        'days' => 3,
-    ],
-    [
-        'description' => 'Asap terpantau di area hutan dekat pemukiman.',
-        'address' => 'Desa Sukamaju',
-        'level' => 'high',
-        'latitude' => -6.9100000,
-        'longitude' => 107.6100000,
-        'status' => 'forwarded',
-        'days' => 4,
-    ],
-    [
-        'description' => 'Laporan indikasi kebakaran telah ditindaklanjuti.',
-        'address' => 'Desa Mekarjaya',
-        'level' => 'low',
-        'latitude' => -7.2100000,
-        'longitude' => 107.9100000,
-        'status' => 'closed',
-        'days' => 5,
-    ],
-];
-
-foreach ($reportData as $data) {
-    $report = Report::firstOrCreate(
+    // Ambil data wilayah
+    $addresses = Address::all()->keyBy('detail_address');
+    $reportData = [
         [
-            'reporter_id' => $reporter->user_id,
-            'report_description' => $data['description'],
+            'description' => 'Terlihat asap tebal di sekitar area hutan.',
+            'address' => 'Kecamatan Baleendah',
+            'level' => 'high',
+            'latitude' => -7.0005000,
+            'longitude' => 107.6307000,
+            'status' => 'submitted',
+            'days' => 1,
         ],
         [
-            'address_id' => $addresses[$data['address']]->address_id,
-            'incident_time' => now()->subDays($data['days']),
-            'condition_level' => $data['level'],
-            'latitude' => $data['latitude'],
-            'longitude' => $data['longitude'],
-            'status' => $data['status'],
-        ]
-    );
+            'description' => 'Ditemukan indikasi pembakaran lahan kosong.',
+            'address' => 'Kecamatan Soreang',
+            'level' => 'medium',
+            'latitude' => -7.0249000,
+            'longitude' => 107.5262000,
+            'status' => 'under_review',
+            'days' => 2,
+        ],
+        [
+            'description' => 'Terlihat titik api kecil di sekitar perkebunan.',
+            'address' => 'Kecamatan Dayeuhkolot',
+            'level' => 'high',
+            'latitude' => -6.9878000,
+            'longitude' => 107.6215000,
+            'status' => 'reviewed',
+            'days' => 3,
+        ],
+        [
+            'description' => 'Asap terpantau di area hutan dekat pemukiman.',
+            'address' => 'Kecamatan Baleendah',
+            'level' => 'high',
+            'latitude' => -7.0050000,
+            'longitude' => 107.6350000,
+            'status' => 'forwarded',
+            'days' => 4,
+        ],
+        [
+            'description' => 'Laporan indikasi kebakaran telah ditindaklanjuti.',
+            'address' => 'Kecamatan Soreang',
+            'level' => 'low',
+            'latitude' => -7.0300000,
+            'longitude' => 107.5300000,
+            'status' => 'closed',
+            'days' => 5,
+        ],
+    ];
+
+
+    foreach ($reportData as $data) {
+        $report = Report::firstOrCreate(
+            [
+                'reporter_id' => $reporter->user_id,
+                'report_description' => $data['description'],
+            ],
+            [
+                'address_id' => $addresses[$data['address']]->address_id,
+                'incident_time' => now()->subDays($data['days']),
+                'condition_level' => $data['level'],
+                'latitude' => $data['latitude'],
+                'longitude' => $data['longitude'],
+                'status' => $data['status'],
+            ]
+        );
 
     // Buat review untuk laporan yang sudah ditinjau
     if (in_array($data['status'], ['under_review', 'reviewed', 'forwarded', 'closed'])) {

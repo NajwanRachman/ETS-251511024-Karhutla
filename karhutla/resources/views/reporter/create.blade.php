@@ -68,6 +68,7 @@
                     </label>
 
                     <select name="address_id"
+                        id="address_id"
                         class="w-full border rounded-lg p-3"
                         required>
 
@@ -83,6 +84,19 @@
                         @endforeach
 
                     </select>
+
+                    <!-- Informasi laporan wilayah -->
+                    <div id="area-reports"
+                        class="hidden mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+
+                        <h3 class="font-semibold text-blue-800 mb-2">
+                            Laporan Aktif di Wilayah Ini
+                        </h3>
+
+                        <div id="area-reports-content" class="text-sm text-gray-700">
+                        </div>
+
+                    </div>
                 </div>
 
                 <div class="mb-4">
@@ -196,6 +210,69 @@
         </div>
 
     </main>
+
+    <!-- penerapan javascript untuk menampilkan laporan aktif di wilayah yang dipilih -->
+
+    <script>
+        const addressSelect = document.getElementById('address_id');
+        const areaReports = document.getElementById('area-reports');
+        const areaReportsContent = document.getElementById('area-reports-content');
+
+        addressSelect.addEventListener('change', function () {
+            const addressId = this.value;
+
+            areaReports.classList.add('hidden');
+            areaReportsContent.innerHTML = '';
+
+            if (!addressId) {
+                return;
+            }
+
+            areaReportsContent.textContent = 'Memuat data laporan...';
+            areaReports.classList.remove('hidden');
+
+            fetch(`/reporter/reports/area/${addressId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Gagal mengambil data laporan.');
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.length === 0) {
+                        areaReportsContent.textContent =
+                            'Belum ada laporan aktif di wilayah ini.';
+                        return;
+                    }
+
+                    areaReportsContent.innerHTML = '';
+
+                    data.forEach(report => {
+                        const item = document.createElement('div');
+                        item.className = 'border-b border-blue-200 py-2';
+
+                        const title = document.createElement('p');
+                        title.className = 'font-semibold';
+                        title.textContent = `Laporan #${report.report_id}`;
+
+                        const detail = document.createElement('p');
+                        detail.textContent =
+                            `${report.location} | Kondisi: ${report.condition} | Status: ${report.status}`;
+
+                        const time = document.createElement('p');
+                        time.className = 'text-gray-500';
+                        time.textContent = `Waktu: ${report.incident_time}`;
+
+                        item.append(title, detail, time);
+                        areaReportsContent.appendChild(item);
+                    });
+                })
+                .catch(error => {
+                    areaReportsContent.textContent = error.message;
+                });
+        });
+    </script>
 
 </body>
 </html>

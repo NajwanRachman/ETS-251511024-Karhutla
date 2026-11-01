@@ -46,10 +46,98 @@
             </a>
         </div>
 
+        <!-- Pencarian dan Filter -->
+        <div class="bg-white rounded-xl shadow p-5 mb-6">
+
+            <form action="{{ route('reporter.reports.index') }}" method="GET">
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    <div>
+                        <label class="block font-semibold mb-2">
+                            Cari Laporan
+                        </label>
+
+                        <input type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="ID atau nama wilayah..."
+                            class="w-full border rounded-lg p-3">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-2">
+                            Filter Status
+                        </label>
+
+                        <select name="status"
+                            class="w-full border rounded-lg p-3">
+
+                            <option value="">Semua Status</option>
+                            <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>
+                                Dikirim
+                            </option>
+                            <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>
+                                Dalam Pemeriksaan
+                            </option>
+                            <option value="reviewed" {{ request('status') == 'reviewed' ? 'selected' : '' }}>
+                                Ditinjau
+                            </option>
+                            <option value="forwarded" {{ request('status') == 'forwarded' ? 'selected' : '' }}>
+                                Diteruskan
+                            </option>
+                            <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>
+                                Selesai
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold mb-2">
+                            Filter Kondisi
+                        </label>
+
+                        <select name="condition"
+                            class="w-full border rounded-lg p-3">
+
+                            <option value="">Semua Kondisi</option>
+                            <option value="low" {{ request('condition') == 'low' ? 'selected' : '' }}>
+                                Rendah
+                            </option>
+                            <option value="medium" {{ request('condition') == 'medium' ? 'selected' : '' }}>
+                                Sedang
+                            </option>
+                            <option value="high" {{ request('condition') == 'high' ? 'selected' : '' }}>
+                                Tinggi
+                            </option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="flex gap-2 mt-4">
+                    <button type="submit"
+                        class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-lg">
+                        Cari dan Filter
+                    </button>
+
+                    <a href="{{ route('reporter.reports.index') }}"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-2 rounded-lg">
+                        Reset
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+
         <div class="bg-white rounded-xl shadow overflow-hidden">
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
+
                     <thead class="bg-green-50 text-gray-700">
                         <tr>
                             <th class="p-4">ID</th>
@@ -116,10 +204,11 @@
                                 </td>
 
                             </tr>
+
                         @empty
                             <tr>
                                 <td colspan="5" class="p-8 text-center text-gray-500">
-                                    Belum ada laporan yang dikirim.
+                                    Tidak ada laporan yang sesuai dengan pencarian atau filter.
                                 </td>
                             </tr>
                         @endforelse

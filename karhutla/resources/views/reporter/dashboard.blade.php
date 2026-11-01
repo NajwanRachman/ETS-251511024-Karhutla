@@ -63,6 +63,11 @@
                 class="inline-block bg-green-700 text-white px-5 py-3 rounded-lg mt-4">
                     + Buat Laporan
                 </a>
+
+                <a href="{{ route('reporter.reports.index') }}"
+                    class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-lg mt-4 ml-2">
+                    Lihat Daftar Laporan
+                </a>
         </div>
     </main>
 

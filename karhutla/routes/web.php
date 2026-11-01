@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Report;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ForwardingController;
+use App\Http\Controllers\UserController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/', [AuthController::class, 'showLoginForm'])
@@ -60,17 +62,21 @@ Route::middleware('auth')->group(function () {
             ));
         })->name('reporter.dashboard');
 
-        // Daftar laporan reporter
+       // Daftar laporan reporter
         Route::get('/reporter/reports', [ReportController::class, 'index'])
-        ->name('reporter.reports.index');
+            ->name('reporter.reports.index');
 
         // Form buat laporan
         Route::get('/reporter/reports/create', [ReportController::class, 'create'])
             ->name('reporter.reports.create');
 
+        // Fetch laporan berdasarkan wilayah
+        Route::get('/reporter/reports/area/{addressId}', [ReportController::class, 'areaReports'])
+            ->name('reporter.reports.area');
+
         // Detail laporan
         Route::get('/reporter/reports/{id}', [ReportController::class, 'show'])
-        ->name('reporter.reports.show');
+            ->name('reporter.reports.show');
 
         // Simpan laporan
         Route::post('/reporter/reports', [ReportController::class, 'store'])
@@ -140,6 +146,23 @@ Route::middleware('auth')->group(function () {
                 'forwarded'
             ));
         })->name('coordinator.dashboard');
+
+        // Penerusan laporan oleh Coordinator
+        Route::get('/coordinator/forwardings', [ForwardingController::class, 'index'])
+            ->name('coordinator.forwardings.index');
+
+        Route::get('/coordinator/forwardings/{id}/create', [ForwardingController::class, 'create'])
+            ->name('coordinator.forwardings.create');
+
+        Route::post('/coordinator/forwardings/{id}', [ForwardingController::class, 'store'])
+            ->name('coordinator.forwardings.store');
+
+        // Manajemen pengguna
+        Route::get('/coordinator/users', [UserController::class, 'index'])
+            ->name('coordinator.users.index');
+
+        Route::patch('/coordinator/users/{id}/role', [UserController::class, 'updateRole'])
+            ->name('coordinator.users.updateRole');
     });
 
     // Logout

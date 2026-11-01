@@ -9,12 +9,43 @@ use App\Models\Report;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $reports = Report::with('address')
-            ->where('reporter_id', Auth::id())
-            ->latest()
-            ->paginate(5);
+        $query = Report::with('address')
+            ->where('reporter_id', Auth::id());
+
+        // Pencarian ID laporan atau wilayah
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                if (is_numeric($search)) {
+                    $q->where('report_id', $search);
+                }
+
+                $q->orWhereHas('address', function ($addressQuery) use ($search) {
+                    $addressQuery->where('detail_address', 'like', "%{$search}%")
+                        ->orWhere('city_regency', 'like', "%{$search}%")
+                        ->orWhere('province', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Filter status
+        if (in_array($request->status, [
+            'submitted', 'under_review', 'reviewed', 'forwarded', 'closed'
+        ])) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter tingkat kondisi
+        if (in_array($request->condition, ['low', 'medium', 'high'])) {
+            $query->where('condition_level', $request->condition);
+        }
+
+        $reports = $query->latest()
+            ->paginate(5)
+            ->withQueryString();
 
         return view('reporter.index', compact('reports'));
     }
@@ -123,5 +154,31 @@ class ReportController extends Controller
         return redirect()
             ->route('volunteer.reports.show', $id)
             ->with('success', 'Hasil pemeriksaan berhasil disimpan.');
+    }
+    // Mengambil laporan aktif di wilayah yang dipilih
+    public function areaReports($addressId)
+    {
+        $address = Address::findOrFail($addressId);
+
+        $reports = Report::with('address')
+            ->whereHas('address', function ($query) use ($address) {
+                $query->where('city_regency', $address->city_regency)
+                    ->where('province', $address->province);
+            })
+            ->where('status', '!=', 'closed')
+            ->latest()
+            ->get()
+            ->map(function ($report) {
+                return [
+                    'report_id' => $report->report_id,
+                    'location' => $report->address->detail_address . ', ' .
+                        $report->address->city_regency,
+                    'condition' => $report->condition_level,
+                    'status' => $report->status,
+                    'incident_time' => $report->incident_time->format('d/m/Y H:i'),
+                ];
+            });
+
+        return response()->json($reports);
     }
 }
